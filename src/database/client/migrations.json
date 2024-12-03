@@ -148,7 +148,8 @@
       "\nCREATE TABLE IF NOT EXISTS \"chunks\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"text\" text,\n\t\"abstract\" text,\n\t\"metadata\" jsonb,\n\t\"index\" integer,\n\t\"type\" varchar,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"updated_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"user_id\" text\n);\n",
       "\nCREATE TABLE IF NOT EXISTS \"embeddings\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"chunk_id\" uuid,\n\t\"embeddings\" vector(1024),\n\t\"model\" text,\n\t\"user_id\" text\n);\n",
       "\nCREATE TABLE IF NOT EXISTS \"unstructured_chunks\" (\n\t\"id\" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,\n\t\"text\" text,\n\t\"metadata\" jsonb,\n\t\"index\" integer,\n\t\"type\" varchar,\n\t\"created_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"updated_at\" timestamp with time zone DEFAULT now() NOT NULL,\n\t\"parent_id\" varchar,\n\t\"composite_id\" uuid,\n\t\"user_id\" text,\n\t\"file_id\" varchar\n);\n",
-      "\nALTER TABLE \"files_to_messages\" RENAME TO \"messages_files\";\nDROP TABLE \"files_to_agents\";",
+      "\nALTER TABLE \"files_to_messages\" RENAME TO \"messages_files\";",
+      "\nDROP TABLE \"files_to_agents\";",
       "\nALTER TABLE \"files\" ADD COLUMN \"file_hash\" varchar(64);",
       "\nALTER TABLE \"files\" ADD COLUMN \"chunk_task_id\" uuid;",
       "\nALTER TABLE \"files\" ADD COLUMN \"embedding_task_id\" uuid;",
@@ -185,15 +186,19 @@
     ],
     "bps": true,
     "folderMillis": 1724089032064,
-    "hash": "5dc2fec997219ecb0fbd1d8aeac3464a3b3d0ba8dcf31c0c7486e4afee801437"
+    "hash": "bc4e36664868d14888b9e9aef180b3e02c563fa3c253111787e68b8ea4cd995f"
   },
   {
     "sql": [
-      "-- step 1: create a temporary table to store the rows we want to keep\nCREATE TEMP TABLE embeddings_temp AS\nSELECT DISTINCT ON (chunk_id) *\nFROM embeddings\nORDER BY chunk_id, random();\n\n-- step 2: delete all rows from the original table\nDELETE FROM embeddings;\n\n-- step 3: insert the rows we want to keep back into the original table\nINSERT INTO embeddings\nSELECT * FROM embeddings_temp;\n\n-- step 4: drop the temporary table\nDROP TABLE embeddings_temp;\n\n-- step 5: now it's safe to add the unique constraint\nALTER TABLE \"embeddings\" ADD CONSTRAINT \"embeddings_chunk_id_unique\" UNIQUE(\"chunk_id\");\n"
+      "-- step 1: create a temporary table to store the rows we want to keep\nCREATE TEMP TABLE embeddings_temp AS\nSELECT DISTINCT ON (chunk_id) *\nFROM embeddings\nORDER BY chunk_id, random();\n",
+      "\n\n-- step 2: delete all rows from the original table\nDELETE FROM embeddings;\n",
+      "\n\n-- step 3: insert the rows we want to keep back into the original table\nINSERT INTO embeddings\nSELECT * FROM embeddings_temp;\n",
+      "\n\n-- step 4: drop the temporary table\nDROP TABLE embeddings_temp;\n",
+      "\n\n-- step 5: now it's safe to add the unique constraint\nALTER TABLE \"embeddings\" ADD CONSTRAINT \"embeddings_chunk_id_unique\" UNIQUE(\"chunk_id\");\n"
     ],
     "bps": true,
     "folderMillis": 1724254147447,
-    "hash": "6aa3e7a9ff9dcd0541ade5471ceec758bc741ee4a3045b4b848e46faedeae7af"
+    "hash": "e99840848ffbb33ca4d7ead6158f02b8d12cb4ff5706d4529d7fa586afa4c2a9"
   },
   {
     "sql": [

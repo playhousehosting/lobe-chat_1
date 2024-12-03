@@ -2,7 +2,7 @@ import { Mock, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SessionModel } from '@/database/_deprecated/models/session';
 import { CreateTopicParams, TopicModel } from '@/database/_deprecated/models/topic';
-import { migrate } from '@/database/client/migrate';
+import { migrate, runMigrations } from '@/database/client/migrate';
 import { ChatTopic } from '@/types/topic';
 
 import { ClientService } from './client';
@@ -21,7 +21,7 @@ describe('TopicService', () => {
   };
   const mockTopics = [mockTopic];
   beforeAll(async () => {
-    await migrate();
+    await runMigrations('abc');
   });
 
   beforeEach(async () => {
