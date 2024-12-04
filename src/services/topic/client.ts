@@ -1,16 +1,12 @@
 import { clientDB } from '@/database/client/db';
 import { TopicModel } from '@/database/server/models/topic';
-import { useUserStore } from '@/store/user';
-import { userProfileSelectors } from '@/store/user/selectors';
 import { ChatTopic } from '@/types/topic';
 
 import { CreateTopicParams, ITopicService, QueryTopicParams } from './type';
 
 export class ClientService implements ITopicService {
   private topicModel: TopicModel;
-  constructor() {
-    const userId = userProfileSelectors.userId(useUserStore.getState())!;
-
+  constructor(userId: string) {
     this.topicModel = new TopicModel(clientDB as any, userId);
   }
 
@@ -36,9 +32,7 @@ export class ClientService implements ITopicService {
   }
 
   async getTopics(params: QueryTopicParams) {
-    console.log('get', params);
     const data = await this.topicModel.query(params);
-    console.log('topic:', data);
     return data as unknown as Promise<ChatTopic[]>;
   }
 
