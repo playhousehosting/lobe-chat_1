@@ -27,7 +27,7 @@
       }
     ]
   },
-  "exclude": ["node_modules", "public/sw.js", "scripts/migrateClientDB/compile-migrations.ts"],
+  "exclude": ["node_modules", "public/sw.js"],
   "include": [
     "next-env.d.ts",
     "vitest.config.ts",
